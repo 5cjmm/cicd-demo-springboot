@@ -23,13 +23,13 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # Paso 3: Compilar y empaquetar
+      # Paso 3: Compilar (sin tests)
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      # Paso 4: Ejecutar todas las pruebas
-      - name: Run Tests
-        run: mvn test
+      # Paso 4: Ejecutar pruebas + cobertura
+      - name: Run Tests with Coverage
+        run: mvn verify
 
       # Paso 5: Guardar reportes de pruebas
       - name: Upload Surefire Reports
@@ -38,4 +38,13 @@ jobs:
         with:
           name: test-reports
           path: target/surefire-reports/
+          retention-days: 7
+
+      # Paso 6: Guardar reporte de cobertura (JaCoCo)
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: target/site/jacoco/
           retention-days: 7
